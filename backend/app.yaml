@@ -1,0 +1,11 @@
+runtime: python39
+entrypoint: gunicorn -w 2 -b :$PORT app:app
+
+env_variables:
+  API_KEY: "AIzaSyDpwqCyYyXZA1bDgNTgdjyRLqrvq9KCmgE"
+  FLASK_ENV: production
+  GCP_PROJECT: synthea-1000patient-11-11-2024
+  SERVICE_ACCOUNT_FILE_PATH: C:\\Users\\nimat\\Downloads\\synthea-1000patient-11-11-2024-1f29d487a7a7.json
+
+resources:
+  memory_gb: 1
