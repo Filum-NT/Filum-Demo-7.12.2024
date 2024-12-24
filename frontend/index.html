@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Search</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      background-color: #f4f4f9;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .form-container {
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      max-width: 400px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-container label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .form-container input, .form-container button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .form-container button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .form-container button:hover {
+      background-color: #0056b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h1>Patient Search</h1>
+  <div class="form-container">
+    <label for="age-range">Age Range (e.g., 20-30):</label>
+    <input type="text" id="age-range" placeholder="Enter age range">
+
+    <label for="gender">Gender:</label>
+    <input type="text" id="gender" placeholder="Enter gender (male/female)">
+
+    <label for="condition-code">Condition Code:</label>
+    <input type="text" id="condition-code" placeholder="Enter condition code">
+
+    <button onclick="searchPatients()">Search</button>
+  </div>
+
+  <table id="results-table" style="display: none;">
+    <thead>
+      <tr>
+        <th>Patient ID</th>
+        <th>Name</th>
+        <th>Birthdate</th>
+        <th>Gender</th>
+        <th>Condition Code</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Results will be dynamically inserted here -->
+    </tbody>
+  </table>
+
+  <script>
+    async function searchPatients() {
+      // Get form values
+      const ageRange = document.getElementById('age-range').value;
+      const gender = document.getElementById('gender').value;
+      const conditionCode = document.getElementById('condition-code').value;
+
+      // Validate inputs
+      if (!ageRange || !gender || !conditionCode) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      try {
+        // Make the API call
+        const response = await fetch('http://localhost:8080/search-patients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            age_range: ageRange,
+            gender: gender,
+            condition_code: conditionCode
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch data. Please check your inputs.');
+        }
+
+        const data = await response.json();
+
+        // Populate the table with results
+        const table = document.getElementById('results-table');
+        const tbody = table.querySelector('tbody');
+        tbody.innerHTML = ''; // Clear existing rows
+
+        data.forEach(patient => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${patient.patient_id}</td>
+            <td>${patient.patient_name}</td>
+            <td>${patient.patient_birthdate}</td>
+            <td>${patient.patient_gender}</td>
+            <td>${patient.condition_code}</td>
+          `;
+          tbody.appendChild(row);
+        });
+
+        table.style.display = 'table'; // Show the table
+      } catch (error) {
+        alert(error.message);
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
