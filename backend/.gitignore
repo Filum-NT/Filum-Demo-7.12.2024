@@ -1,4 +1,4 @@
-keys/
+keys/*.json
 .env
 venv/
 __pycache__/
