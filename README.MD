@@ -4,8 +4,11 @@ A demo project showcasing integration with the Google Cloud Healthcare API for m
 ## Setup Instructions
 
 ### Backend
-1. Place the service account JSON file from the Google Cloud Console
-in `backend/keys/` and rename it to `service_account.json`
+1. Download the service account JSON file from the Google Cloud Console
+and rename it to `service_account.json`
+
+2. If it doesn't exist, create a `keys` folder in `backend/` and place
+`service_account.json` in `backend/keys`
 
 2. If it doesn't exist, create a `.env` file in `backend/` with fields:
     - GCP_PROJECT_ID=
