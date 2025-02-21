@@ -26,13 +26,16 @@ def get_patients_from_gcp(condition_code, gender, age_range):
     response.raise_for_status()
     return response.json()
 
-def get_conditions_from_gcp(condition_code, gender, age_range):
+def get_conditions_from_gcp(condition_search, gender, age_range):
     """
     Fetches condition data from GCP.
     """
     session = get_authorized_session()
     min_birth_date, max_birth_date = calculate_birth_date_range(age_range)
-    query = f"subject.gender={gender}&subject.birthdate=ge{min_birth_date}&subject.birthdate=le{max_birth_date}&code={condition_code}"
+    query = (
+        f"subject.gender={gender}&subject.birthdate=ge{min_birth_date}"
+        f"&subject.birthdate=le{max_birth_date}&code:text={condition_search}"
+    )
     url = f"{Config.FHIR_BASE_URL}/Condition/_search?{query}"
 
     headers = {"Content-Type": "application/fhir+json;charset=utf-8"}

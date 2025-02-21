@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Patient Search</title>
   <style>
     body {
@@ -11,12 +11,10 @@
       padding: 0;
       background-color: #f4f4f9;
     }
-
     h1 {
       text-align: center;
       color: #333;
     }
-
     .form-container {
       margin: 20px auto;
       padding: 20px;
@@ -25,54 +23,81 @@
       max-width: 400px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-
     .form-container label {
       display: block;
       margin-bottom: 8px;
       font-weight: bold;
     }
-
-    .form-container input, .form-container button {
+    .form-container input,
+    .form-container button {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-
     .form-container button {
       background-color: #007bff;
       color: white;
       border: none;
       cursor: pointer;
     }
-
     .form-container button:hover {
       background-color: #0056b3;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
     }
-
     table, th, td {
       border: 1px solid #ccc;
     }
-
     th, td {
       text-align: left;
       padding: 10px;
     }
-
     th {
       background-color: #007bff;
       color: white;
     }
-
     tr:nth-child(even) {
       background-color: #f9f9f9;
+    }
+    /* Modal styles */
+    .modal {
+      display: none; 
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 600px;
+      border-radius: 8px;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
     }
   </style>
 </head>
@@ -80,13 +105,13 @@
   <h1>Patient Search</h1>
   <div class="form-container">
     <label for="age-range">Age Range (e.g., 20-30):</label>
-    <input type="text" id="age-range" placeholder="Enter age range">
+    <input type="text" id="age-range" placeholder="Enter age range" />
 
     <label for="gender">Gender:</label>
-    <input type="text" id="gender" placeholder="Enter gender (male/female)">
+    <input type="text" id="gender" placeholder="Enter gender (male/female)" />
 
-    <label for="condition-code">Condition Code:</label>
-    <input type="text" id="condition-code" placeholder="Enter condition code">
+    <label for="condition-code">Condition Code or Name:</label>
+    <input type="text" id="condition-code" placeholder="Enter condition code or name" />
 
     <button onclick="searchPatients()">Search</button>
   </div>
@@ -99,28 +124,37 @@
         <th>Birthdate</th>
         <th>Gender</th>
         <th>Condition Code</th>
+        <th>Testing Timeline</th>
       </tr>
     </thead>
     <tbody>
-      <!-- Results will be dynamically inserted here -->
+      <!-- Rows will be dynamically inserted here -->
     </tbody>
   </table>
 
+  <!-- Modal for displaying the testing timeline -->
+  <div id="timeline-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Testing Timeline</h2>
+      <div id="timeline-content" style="white-space: pre-wrap;"></div>
+    </div>
+  </div>
+
   <script>
     async function searchPatients() {
-      // Get form values
+      // Retrieve form values
       const ageRange = document.getElementById('age-range').value;
       const gender = document.getElementById('gender').value;
       const conditionCode = document.getElementById('condition-code').value;
 
-      // Validate inputs
       if (!ageRange || !gender || !conditionCode) {
         alert('Please fill in all fields.');
         return;
       }
 
       try {
-        // Make the API call
+        // Make the API call to search for patients
         const response = await fetch('http://localhost:8080/search-patients', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -136,28 +170,71 @@
         }
 
         const data = await response.json();
+        const patients = data.patients;
 
-        // Populate the table with results
+        // Populate the table with the returned patients
         const table = document.getElementById('results-table');
         const tbody = table.querySelector('tbody');
-        tbody.innerHTML = ''; // Clear existing rows
+        tbody.innerHTML = ''; // Clear any existing rows
 
-        data.forEach(patient => {
+        patients.forEach(patient => {
           const row = document.createElement('tr');
+          // Create hyperlink for fetching testing timeline on demand
+          const timelineLink = `<a href="#" onclick="fetchTimeline(this)" data-patient="${encodeURIComponent(JSON.stringify(patient))}">View Testing Timeline</a>`;
           row.innerHTML = `
             <td>${patient.patient_id}</td>
             <td>${patient.patient_name}</td>
             <td>${patient.patient_birthdate}</td>
             <td>${patient.patient_gender}</td>
             <td>${patient.condition_code}</td>
+            <td>${timelineLink}</td>
           `;
           tbody.appendChild(row);
         });
 
-        table.style.display = 'table'; // Show the table
+        table.style.display = 'table';
       } catch (error) {
         alert(error.message);
         console.error(error);
+      }
+    }
+
+    function fetchTimeline(link) {
+      // Retrieve the patient details stored in the data attribute
+      const encodedData = link.getAttribute("data-patient");
+      const patient = JSON.parse(decodeURIComponent(encodedData));
+
+      // Call the backend endpoint to fetch the testing timeline for this patient
+      fetch('http://localhost:8080/fetch-testing-timeline', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ patient_details: patient })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.testing_timeline) {
+          // Set the modal content and display the modal
+          document.getElementById("timeline-content").textContent = data.testing_timeline;
+          document.getElementById("timeline-modal").style.display = "block";
+        } else {
+          alert("Error: " + (data.error || "Unknown error."));
+        }
+      })
+      .catch(err => {
+        alert("Error fetching testing timeline");
+        console.error(err);
+      });
+    }
+
+    function closeModal() {
+      document.getElementById("timeline-modal").style.display = "none";
+    }
+
+    // Optional: Close the modal when clicking outside the modal content
+    window.onclick = function(event) {
+      const modal = document.getElementById("timeline-modal");
+      if (event.target == modal) {
+        modal.style.display = "none";
       }
     }
   </script>

@@ -7,27 +7,23 @@ A demo project showcasing integration with the Google Cloud Healthcare API for m
 1. Download the service account JSON file from the Google Cloud Console
 and rename it to `service_account.json`
 
-2. If it doesn't exist, create a `keys` folder in `backend/` and place
+2. Create a `keys` folder (if it doesn't exist) in `backend/` and place
 `service_account.json` in `backend/keys`
-
-2. If it doesn't exist, create a `.env` file in `backend/` with fields:
-    - GCP_PROJECT_ID=
-    - GCP_LOCATION=
-    - GCP_DATASET=
-    - GCP_FHIR_STORE=
-    - SERVICE_ACCOUNT_FILE_PATH=keys/service_account.json
 
 3. Open terminal and navigate to project directory
 
 4. Navigate to backend: `cd backend`
 
-5. Create virtual environment: `python3 -m venv venv`
+5. Create a `.env` file using `.env_template` and add credentials:
+    `cp .env_template .env` (can copy/paste manually too)
 
-6. Activate venv: `source venv/bin/activate`
+6. Create virtual environment: `python3 -m venv venv`
 
-7. Install dependencies: `pip3 install -r requirements.txt`
+7. Activate venv: `source venv/bin/activate`
 
-8. Run the server: `python3 app.py`
+8. Install dependencies: `pip3 install -r requirements.txt`
+
+9. Run the server: `python3 app.py`
 
 ### Frontend
 
