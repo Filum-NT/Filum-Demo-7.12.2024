@@ -39,7 +39,8 @@ The Cloud Healthcare API has limited support for chained and reverse chained sea
 ## Possible Next Steps
 
 ### Backend
-- Implement additional query parameters such as condition text
+- Implement additional query parameters such as condition text [DONE]
+- AI or GPT integration [DONE]
 - Add user authentication
 - Add caching to optimize repeated queries
 
