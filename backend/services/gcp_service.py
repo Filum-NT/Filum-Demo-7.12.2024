@@ -1,16 +1,29 @@
+import google.auth
 from google.auth.transport import requests
-from google.oauth2 import service_account
+from google.auth import impersonated_credentials
 from config import Config
 from utils.date_utils import calculate_birth_date_range
 
 def get_authorized_session():
     """
-    Creates an authorized session for GCP.
+    Creates an authorized session for GCP using service account impersonation.
     """
-    credentials = service_account.Credentials.from_service_account_file(
-        Config.SERVICE_ACCOUNT_FILE_PATH
-    ).with_scopes(["https://www.googleapis.com/auth/cloud-platform"])
-    return requests.AuthorizedSession(credentials)
+  # Retrieve the default source credentials from the environment.
+    source_credentials, _ = google.auth.default()
+    
+    # Define the scopes required for accessing the Healthcare API.
+    target_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+    
+    # Create impersonated credentials for the target service account.
+    impersonated_creds = impersonated_credentials.Credentials(
+        source_credentials=source_credentials,
+        target_principal=Config.TARGET_SERVICE_ACCOUNT,
+        target_scopes=target_scopes,
+        lifetime=3600  # Lifetime of the impersonated credentials in seconds (max 3600)
+    )
+    
+    # Return an AuthorizedSession that will attach the necessary authorization headers.
+    return requests.AuthorizedSession(impersonated_creds)
 
 def get_patients_from_gcp(condition_code, gender, age_range):
     """

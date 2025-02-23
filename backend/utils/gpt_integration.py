@@ -21,10 +21,10 @@ def get_testing_timeline(patient_details):
 
     # Build your prompt.
     prompt = (
-        "You are a medical AI assistant trained to provide testing timelines \
-        based on standard medical guidelines. Based on the following patient's details, return \
+        "You are a medical assistant trained to provide screening and chronic disease management timelines \
+        based on evidence-based medical guidelines. Based on the following patient's details, return \
         a structured testing schedule with recommended tests, frequency, and \
-        rationale based on best medical practices. Do not diagnose but strictly \
+        rationale based on guidelines provided by evidence-based bodies and task-forces. Do not diagnose but strictly \
         base recommendations on evidence-based guidelines\n\n"
         "Patient Details:\n"
         f"{formatted_details}\n\n"
