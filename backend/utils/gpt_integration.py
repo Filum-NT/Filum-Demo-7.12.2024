@@ -14,18 +14,18 @@ def get_testing_timeline(patient_details):
         [
             f"Patient ID: {p['patient_id']}, Name: {p['patient_name']}, "
             f"Birthdate: {p['patient_birthdate']}, Gender: {p['patient_gender']}, "
-            f"Condition: {p.get('condition_display', 'N/A')}"
+            f"Condition: {p['condition_code']}"
             for p in patient_details
         ]
     )
-
+    print(formatted_details)
     # Build your prompt.
     prompt = (
         "You are a medical assistant trained to provide screening and chronic disease management timelines \
         based on evidence-based medical guidelines. Based on the following patient's details, return \
         a structured testing schedule with recommended tests, frequency, and \
         rationale based on guidelines provided by evidence-based bodies and task-forces. Do not diagnose but strictly \
-        base recommendations on evidence-based guidelines\n\n"
+        base recommendations on evidence-based guidelines. Do not use any markdown and only use plain text or lists.\n\n"
         "Patient Details:\n"
         f"{formatted_details}\n\n"
     )
@@ -33,7 +33,7 @@ def get_testing_timeline(patient_details):
     try:
         # Call the Chat Completion API using the new interface.
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",  # or choose the appropriate model, such as "gpt-3.5-turbo" if needed.
+            model="gpt-3.5-turbo",  # Can upgrate to gpt-4o-mini or choose the appropriate model, such as "gpt-3.5-turbo" if needed.
             messages=[
                 {"role": "system", "content": "You are a helpful medical advisor."},
                 {"role": "user", "content": prompt}
