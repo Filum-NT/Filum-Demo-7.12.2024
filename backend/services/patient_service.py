@@ -26,7 +26,7 @@ def search_patients_service(condition_code, gender, age_range):
     for entry in conditions.get('entry', []):
         condition = entry['resource']
         patient_reference = condition['subject']['reference'].split("/")[-1]
-        condition_code = condition['code']['coding'][0].get('code')
+        condition_code = condition['code']['text']
 
         # Match condition to patient
         patient_data = patients_dict.get(patient_reference)

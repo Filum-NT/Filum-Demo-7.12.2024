@@ -38,7 +38,7 @@ def get_testing_timeline(patient_details):
                 {"role": "system", "content": "You are a helpful medical advisor."},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=300,
+            max_tokens=800,
             temperature=0.5,
         )
         # Extract the generated timeline from the response.

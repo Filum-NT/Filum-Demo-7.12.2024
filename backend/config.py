@@ -10,8 +10,8 @@ class Config:
     GCP_DATASET = os.getenv("GCP_DATASET")
     GCP_FHIR_STORE = os.getenv("GCP_FHIR_STORE")
 
-    # The email of the target service account to impersonate
-    TARGET_SERVICE_ACCOUNT = os.environ.get("TARGET_SERVICE_ACCOUNT")
+    # Service Account File Path
+    SERVICE_ACCOUNT_FILE_PATH = "keys/service_account.json"
 
     # Derived URLs
     FHIR_BASE_URL = (
